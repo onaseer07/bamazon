@@ -59,20 +59,38 @@ connection.query('SELECT * FROM products WHERE item_id IS NOT NULL',function(err
     ]).then (function(custSelection){
         let itemNum = [parseInt(custSelection.id)];
         let itemQty = custSelection.qty;
-        console.log('Customer picked this item#: '+itemNum);
-        console.log("He/She wants to get this much of it's qty: "+itemQty);
+        // console.log('Customer picked this item#: '+itemNum);
+        // console.log("He/She wants to get this much of it's qty: "+itemQty);
         connection.query('SELECT product_name,price,stock_qty FROM products WHERE item_id = ?',itemNum,function(err,sysRes){
             let dbProdName = sysRes[0].product_name;
             let dbProdPrice = sysRes[0].price;
             let dbProdStock = sysRes[0].stock_qty;
-            console.log(dbProdName);
-            console.log(`$${dbProdPrice}`);
-            console.log(dbProdStock);
+            // console.log(dbProdName);
+            // console.log(`$${dbProdPrice}`);
+            // console.log(dbProdStock);
             if (itemQty <= dbProdStock) {
-                console.log('Your order will be complete based on the stock qty.')
+                console.log(`Your order will be complete based on the stock qty.\n Your total cost is $${itemQty*dbProdPrice}.`);
                 //fullfill the order 
+                inquirer.prompt([
+                    {
+                        type: 'confirm',
+                        name: 'confirmOrder',
+                        message: 'Are you sure you want to proceed to checkout charging your credit card?'
+                    }
+                ]).then(function(confirmOrder){
+                    if(confirmOrder.confirmOrder){
+                        connection.query(`UPDATE products SET stock_qty = ${dbProdStock-itemQty} WHERE item_id = ${itemNum}`,function(err,completeOrder){
+                            console.log('Thank You for your purchase! My child will be fed now!');
+                            connection.destroy();
+                        });
+                    } else {
+                        console.log('I knew you were not going to buy!');
+                        connection.destroy();
+                    }
+                });
             } else if (itemQty > dbProdStock) {
-                console.log('Sorry we cannot complete your order due to insufficient stock qty.')
+                console.log('Sorry we cannot complete your order due to insufficient stock qty.');
+                connection.destroy();
             }
             if(err) throw err;
             });
