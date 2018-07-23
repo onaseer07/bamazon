@@ -81,10 +81,12 @@ connection.query('SELECT * FROM products WHERE item_id IS NOT NULL',function(err
                     if(confirmOrder.confirmOrder){
                         connection.query(`UPDATE products SET stock_qty = ${dbProdStock-itemQty} WHERE item_id = ${itemNum}`,function(err,completeOrder){
                             console.log('Thank You for your purchase! My child will be fed now!');
+                            //terminating App connection
                             connection.destroy();
                         });
                     } else {
                         console.log('I knew you were not going to buy!');
+                        //terminating App connection
                         connection.destroy();
                     }
                 });
