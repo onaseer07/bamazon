@@ -1,7 +1,7 @@
 # Bamazon - OnlineStore w NodeJS
 A simple easy to use NodeJS based online store front application reading and updating data from MySQL. 
 
-![Screenshot below](https://drive.google.com/open?id=1u-Ne7wojLnLOeHpD87uNVolzgHdCRfHK)
+![Screenshot below](./bamazon.gif)
 
 Prototype: clone the repo
 
