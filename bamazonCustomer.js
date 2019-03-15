@@ -9,7 +9,7 @@ let pool = mysql.createPool(
     {
         connectionLimit: 100,
         host: 'localhost',
-        post: '3306',
+        port: '3306',
         user: 'root',
         password: 'root',
         database: 'bamazon',
@@ -19,7 +19,7 @@ let pool = mysql.createPool(
 pool.getConnection(function(err,connection){
     if (err) throw err;
 //Creating a query to read all the products data from the DB & display it in table upon start of the app. 
-connection.query('SELECT * FROM products WHERE item_id IS NOT NULL',function(err,res){
+connection.query('SELECT * FROM products',function(err,res){
     //CLI-TABLE reference to create new Table object with headers ('ID, Product Name, Price') and col-widths.
     let table = new Table(
         {
@@ -36,7 +36,7 @@ connection.query('SELECT * FROM products WHERE item_id IS NOT NULL',function(err
 
     //Display welcome message to the customer that makes them buy from Bamazon.
         //App displays all items for sale with prices
-    console.log('WELCOME TO BAMAZON! PLEASE BUY SOMETHING BECAUSE I HAVE A CHILD TO FEED. --- NO PRESSURE! '+ '\n'+table.toString());
+    console.log('WELCOME TO BAMAZON! PLEASE MAKE A SELECTION AND PURCHASE ANYTHING YOU LIKE'+ '\n'+table.toString());
     //Creating the list of IDs that customer can choose when picking items to buy
     let choiceArray = res.map(listChoices);
     //function to return choices(item_id's) converting to string type as elements of new array
@@ -48,7 +48,7 @@ connection.query('SELECT * FROM products WHERE item_id IS NOT NULL',function(err
         {
             type:'list',
             name:'id',
-            message: "Select the item's Id that you wish to buy! Don't be cheap! Please buy the most expensive items!",
+            message: "Select the item's Id that you wish to buy!",
             choices: choiceArray,
         },
         {
@@ -80,7 +80,7 @@ connection.query('SELECT * FROM products WHERE item_id IS NOT NULL',function(err
                 ]).then(function(confirmOrder){
                     if(confirmOrder.confirmOrder){
                         connection.query(`UPDATE products SET stock_qty = ${dbProdStock-itemQty} WHERE item_id = ${itemNum}`,function(err,completeOrder){
-                            console.log('Thank You for your purchase! My child will be fed now!');
+                            console.log('Thank You for your purchase! You are a valued customer to us. Please come back and shop with us again.');
                             //terminating App connection
                             connection.destroy();
                         });
